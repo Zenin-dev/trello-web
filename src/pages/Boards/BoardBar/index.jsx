@@ -39,7 +39,8 @@ function BoardBar() {
         overflowX: 'auto',
         borderBottom: '1px solid white',
         bgcolor: (theme) =>
-          theme.palette.mode === 'dark' ? '#34495e' : '#1976d2'
+          theme.palette.mode === 'dark' ? '#34495e' : '#1976d2',
+        '&::-webkit-scrollbar-track': { m: 2 }
       }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Chip
@@ -91,8 +92,11 @@ function BoardBar() {
             '& .MuiAvatar-root': {
               width: 30,
               height: 30,
-              fontSize: 16,
-              border: 'none'
+              fontSize: 14,
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer',
+              '&:first-of-type': { bgcolor: '#a4b0be' }
             }
           }}>
           <Tooltip title='Zenin-dev'>
