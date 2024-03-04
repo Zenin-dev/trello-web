@@ -1,3 +1,4 @@
+import { mockData } from '~/apis/mock-data'
 import Container from '@mui/material/Container'
 import AppBar from '~/components/AppBar/AppBar'
 import BoardBar from './BoardBar/BoardBar'
@@ -11,8 +12,8 @@ function Board() {
         maxWidth={false}
         sx={{ height: '100vh' }}>
         <AppBar />
-        <BoardBar />
-        <BoardContent />
+        <BoardBar board={mockData?.board} />
+        <BoardContent board={mockData?.board} />
       </Container>
     </>
   )
