@@ -1,4 +1,5 @@
-import { cloneDeep } from 'lodash'
+import { generatePlaceholderCard } from '~/utils/formaters'
+import { cloneDeep, isEmpty } from 'lodash'
 import Card from './ListColumns/Column/ListCards/Card/Card'
 import Column from './ListColumns/Column/Column'
 import { useState, useEffect, useCallback, useRef } from 'react'
@@ -13,9 +14,7 @@ import {
   defaultDropAnimationSideEffects,
   closestCorners,
   pointerWithin,
-  rectIntersection,
-  getFirstCollision,
-  closestCenter
+  getFirstCollision
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { mapOrder } from '~/utils/sorts'
@@ -52,8 +51,7 @@ function BoardContent({ board }) {
   const lastOverId = useRef(null)
 
   useEffect(() => {
-    const orderedColumns = mapOrder(board?.columns, board?.columnOrderIds, '_id')
-    setOrderedColumns(orderedColumns)
+    setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, '_id'))
   }, [board])
 
   // Tìm một cái column theo cardId
@@ -89,6 +87,12 @@ function BoardContent({ board }) {
 
       if (nextActiveColumn) {
         nextActiveColumn.cards = nextActiveColumn.cards.filter(card => card._id !== activeDraggingCardId)
+
+        // Them Placeholder neu Column rong
+        if (isEmpty(nextActiveColumn.cards)) {
+          nextActiveColumn.cards = [generatePlaceholderCard(nextActiveColumn)]
+        }
+
         nextActiveColumn.cardOrderIds = nextActiveColumn.cards.map(card => card._id)
       }
 
@@ -101,6 +105,9 @@ function BoardContent({ board }) {
         }
 
         nextOverColumn.cards = nextOverColumn.cards.toSpliced(newCardIndex, 0, rebuild_activeDraggingCardData)
+
+        nextOverColumn.cards = nextOverColumn.cards.filter(card => !card.FE_PlaceholderCard)
+
         nextOverColumn.cardOrderIds = nextOverColumn.cards.map(card => card._id)
       }
 
@@ -116,7 +123,7 @@ function BoardContent({ board }) {
     )
     setActiveDragItemData(event?.active?.data.current)
 
-    // Neu keo Card thi moi set hanh song Old Column
+    // Neu keo Card thi moi set hanh dong Old Column
     if (event?.active?.data?.current?.columnId) {
       setOldColumnWhenDraggingCard(findColumnByCardId(event?.active?.id))
     }
@@ -210,9 +217,21 @@ function BoardContent({ board }) {
     // Drag end Column
     if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
       if (active.id !== over.id) {
+        console.log('active: ', active)
+        console.log('over: ', over)
         const oldColumnIndex = orderedColumns.findIndex(c => c._id === active.id)
-        const newColumnIndex = orderedColumns.findIndex(c => c._id === over.id)
+        console.log('oldColumnIndex: ', oldColumnIndex)
+        let newColumnIndex
+        if (over.data.current?.columnId) {
+          newColumnIndex = orderedColumns.findIndex(c => c._id === over.data.current.columnId)
+        } else {
+          newColumnIndex = orderedColumns.findIndex(c => c._id === over.id)
+        }
+
+        console.log(typeof over.data.current)
+        console.log('newColumnIndex: ', newColumnIndex)
         const dndOrderedColumns = arrayMove(orderedColumns, oldColumnIndex, newColumnIndex)
+        console.log('dndOrderedColumns: ', dndOrderedColumns)
 
         // Sau xu ly Api
         // const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id)
@@ -243,15 +262,14 @@ function BoardContent({ board }) {
       // First, let's see if there are any collisions with the pointer
       const pointerIntersections = pointerWithin(args)
 
-      // Collision detection algorithms return an array of collisions
-      const intersections = pointerIntersections.length > 0 ? pointerIntersections : rectIntersection(args)
+      if (!pointerIntersections?.length) return
 
-      let overId = getFirstCollision(intersections, 'id')
+      let overId = getFirstCollision(pointerIntersections, 'id')
 
       if (overId) {
         const checkColumn = orderedColumns.find(column => column._id === overId)
         if (checkColumn) {
-          overId = closestCenter({
+          overId = closestCorners({
             ...args,
             droppableContainers: args.droppableContainers.filter(container => {
               return container.id !== overId && checkColumn?.cardOrderIds?.includes(container.id)

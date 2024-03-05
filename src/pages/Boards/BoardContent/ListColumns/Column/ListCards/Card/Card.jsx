@@ -12,14 +12,7 @@ import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 
 function Card({ card }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card._id,
     data: { ...card }
   })
@@ -32,11 +25,7 @@ function Card({ card }) {
     border: isDragging ? '1px solid #2ecc71' : undefined
   }
   const shouldShowCardActions = () => {
-    return (
-      !!card?.memberIds?.length ||
-      !!card?.comments?.length ||
-      !!card?.attachments?.length
-    )
+    return !!card?.memberIds?.length || !!card?.comments?.length || !!card?.attachments?.length
   }
 
   return (
@@ -48,14 +37,10 @@ function Card({ card }) {
       sx={{
         cursor: 'pointer',
         boxShadow: '0 1px 1px rgba(0,0,0,0.2)',
-        overflow: 'unset'
+        overflow: 'unset',
+        display: card?.FE_PlaceholderCard ? 'none' : 'block'
       }}>
-      {card?.cover && (
-        <CardMedia
-          sx={{ height: 140 }}
-          image={card?.cover}
-        />
-      )}
+      {card?.cover && <CardMedia sx={{ height: 140 }} image={card?.cover} />}
 
       <CardContent
         sx={{
@@ -70,26 +55,20 @@ function Card({ card }) {
         <CardActions sx={{ p: '0 4px 8px' }}>
           {/* members */}
           {!!card?.memberIds?.length && (
-            <Button
-              size='small'
-              startIcon={<GroupsIcon />}>
+            <Button size='small' startIcon={<GroupsIcon />}>
               {card.memberIds.length}
             </Button>
           )}
 
           {/* comments */}
           {!!card?.comments?.length && (
-            <Button
-              size='small'
-              startIcon={<ModeCommentIcon />}>
+            <Button size='small' startIcon={<ModeCommentIcon />}>
               {card.comments.length}
             </Button>
           )}
           {/* attachments */}
           {!!card?.attachments?.length && (
-            <Button
-              size='small'
-              startIcon={<AttachmentIcon />}>
+            <Button size='small' startIcon={<AttachmentIcon />}>
               {card.attachments.length}
             </Button>
           )}
