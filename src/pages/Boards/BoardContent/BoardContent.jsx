@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash'
 import Card from './ListColumns/Column/ListCards/Card/Card'
 import Column from './ListColumns/Column/Column'
-import { useState } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   DndContext,
   // PointerSensor,
@@ -12,16 +12,20 @@ import {
   DragOverlay,
   defaultDropAnimationSideEffects,
   closestCorners,
+  pointerWithin,
+  rectIntersection,
+  getFirstCollision,
+  closestCenter
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { mapOrder } from '~/utils/sorts'
 import Box from '@mui/material/Box'
 import ListColumns from './ListColumns/ListColumns'
-import { useEffect } from 'react'
+// import end
 
 const ACTIVE_DRAG_ITEM_TYPE = {
   COLUMN: 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
-  CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD',
+  CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 
 function BoardContent({ board }) {
@@ -29,10 +33,10 @@ function BoardContent({ board }) {
   //   activationConstraint: { distance: 10 }
   // })
   const mouseSensor = useSensor(MouseSensor, {
-    activationConstraint: { distance: 10 },
+    activationConstraint: { distance: 10 }
   })
   const touchSensor = useSensor(TouchSensor, {
-    activationConstraint: { delay: 250, tolerance: 500 },
+    activationConstraint: { delay: 250, tolerance: 500 }
   })
   const sensor = useSensors(mouseSensor, touchSensor)
 
@@ -43,6 +47,9 @@ function BoardContent({ board }) {
   const [activeDragItemType, setActiveDragItemType] = useState(null)
   const [activeDragItemData, setActiveDragItemData] = useState(null)
   const [oldColumnWhenDraggingCard, setOldColumnWhenDraggingCard] = useState(null)
+
+  // Diem va cham cuoi cung (xu ly thuat toan phat hien va cham)
+  const lastOverId = useRef(null)
 
   useEffect(() => {
     const orderedColumns = mapOrder(board?.columns, board?.columnOrderIds, '_id')
@@ -62,7 +69,7 @@ function BoardContent({ board }) {
     over,
     activeColumn,
     activeDraggingCardId,
-    activeDraggingCardData,
+    activeDraggingCardData
   ) => {
     setOrderedColumns(prevColumns => {
       const overCardIndex = overColumn?.cards?.findIndex(card => card._id === overCardId)
@@ -90,7 +97,7 @@ function BoardContent({ board }) {
 
         const rebuild_activeDraggingCardData = {
           ...activeDraggingCardData,
-          columnId: nextOverColumn._id,
+          columnId: nextOverColumn._id
         }
 
         nextOverColumn.cards = nextOverColumn.cards.toSpliced(newCardIndex, 0, rebuild_activeDraggingCardData)
@@ -105,7 +112,7 @@ function BoardContent({ board }) {
   const handleDragStart = event => {
     setActiveDragItemId(event?.active?.id)
     setActiveDragItemType(
-      event?.active?.data?.current?.columnId ? ACTIVE_DRAG_ITEM_TYPE.CARD : ACTIVE_DRAG_ITEM_TYPE.COLUMN,
+      event?.active?.data?.current?.columnId ? ACTIVE_DRAG_ITEM_TYPE.CARD : ACTIVE_DRAG_ITEM_TYPE.COLUMN
     )
     setActiveDragItemData(event?.active?.data.current)
 
@@ -125,7 +132,7 @@ function BoardContent({ board }) {
       // activeDraggingCard
       const {
         id: activeDraggingCardId,
-        data: { current: activeDraggingCardData },
+        data: { current: activeDraggingCardData }
       } = active
       const { id: overCardId } = over
 
@@ -142,7 +149,7 @@ function BoardContent({ board }) {
           over,
           activeColumn,
           activeDraggingCardId,
-          activeDraggingCardData,
+          activeDraggingCardData
         )
       }
     }
@@ -158,7 +165,7 @@ function BoardContent({ board }) {
       // activeDraggingCard
       const {
         id: activeDraggingCardId,
-        data: { current: activeDraggingCardData },
+        data: { current: activeDraggingCardData }
       } = active
       const { id: overCardId } = over
 
@@ -176,7 +183,7 @@ function BoardContent({ board }) {
           over,
           activeColumn,
           activeDraggingCardId,
-          activeDraggingCardData,
+          activeDraggingCardData
         )
       } else {
         // Keo card trong 1 column
@@ -208,7 +215,7 @@ function BoardContent({ board }) {
         const dndOrderedColumns = arrayMove(orderedColumns, oldColumnIndex, newColumnIndex)
 
         // Sau xu ly Api
-        const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id)
+        // const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id)
 
         setOrderedColumns(dndOrderedColumns)
       }
@@ -223,13 +230,47 @@ function BoardContent({ board }) {
 
   const dropAnimation = {
     sideEffects: defaultDropAnimationSideEffects({
-      styles: { active: { opacity: '0.5' } },
-    }),
+      styles: { active: { opacity: '0.5' } }
+    })
   }
+
+  const collisionDetectionStrategy = useCallback(
+    args => {
+      if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
+        return closestCorners({ ...args })
+      }
+
+      // First, let's see if there are any collisions with the pointer
+      const pointerIntersections = pointerWithin(args)
+
+      // Collision detection algorithms return an array of collisions
+      const intersections = pointerIntersections.length > 0 ? pointerIntersections : rectIntersection(args)
+
+      let overId = getFirstCollision(intersections, 'id')
+
+      if (overId) {
+        const checkColumn = orderedColumns.find(column => column._id === overId)
+        if (checkColumn) {
+          overId = closestCenter({
+            ...args,
+            droppableContainers: args.droppableContainers.filter(container => {
+              return container.id !== overId && checkColumn?.cardOrderIds?.includes(container.id)
+            })
+          })[0]?.id
+        }
+
+        lastOverId.current = overId
+        return [{ id: overId }]
+      }
+      return lastOverId.curren ? [{ id: lastOverId.current }] : []
+    },
+    [activeDragItemType, orderedColumns]
+  )
 
   return (
     <DndContext
-      collisionDetection={closestCorners}
+      // collisionDetection={closestCorners} bug
+      collisionDetection={collisionDetectionStrategy}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
@@ -238,7 +279,7 @@ function BoardContent({ board }) {
         sx={{
           bgcolor: theme => (theme.palette.mode === 'dark' ? '#34495e' : '#1976d2'),
           width: '100%',
-          height: theme => theme.trello.boardContentHeight,
+          height: theme => theme.trello.boardContentHeight
         }}>
         <ListColumns columns={orderedColumns} />
         <DragOverlay dropAnimation={dropAnimation}>
