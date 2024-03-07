@@ -1,3 +1,6 @@
+import CloseIcon from '@mui/icons-material/Close'
+import TextField from '@mui/material/TextField'
+import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { mapOrder } from '~/utils/sorts'
@@ -20,16 +23,26 @@ import ContentPaste from '@mui/icons-material/ContentPaste'
 import Cloud from '@mui/icons-material/Cloud'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
+import theme from '~/theme'
 
 function Column({ column }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({
+  const [openNewCardForm, setOpenNewCardForm] = useState(false)
+  const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
+
+  const [newCardTitle, setNewCardTitle] = useState('')
+  const addNewCard = () => {
+    if (!newCardTitle) {
+      // console.error('Please enter Card Title!')
+      return
+    }
+    // console.log(newCardTitle)
+    // Call API
+
+    toggleOpenNewCardForm()
+    setNewCardTitle('')
+  }
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id,
     data: { ...column }
   })
@@ -45,7 +58,7 @@ function Column({ column }) {
 
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
-  const handleClick = (event) => {
+  const handleClick = event => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = () => {
@@ -53,27 +66,22 @@ function Column({ column }) {
   }
   const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id')
   return (
-    <div
-      ref={setNodeRef}
-      style={dndKitColumnStyles}
-      {...attributes}>
+    <div ref={setNodeRef} style={dndKitColumnStyles} {...attributes}>
       <Box
         {...listeners}
         sx={{
           minWidth: '300px',
           maxWidth: '300px',
-          bgcolor: (theme) =>
-            theme.palette.mode === 'dark' ? '#333643' : '#ebecf0',
+          bgcolor: theme => (theme.palette.mode === 'dark' ? '#333643' : '#ebecf0'),
           ml: 2,
           borderRadius: '6px',
           height: 'fit-content',
-          maxHeight: (theme) =>
-            `calc(${theme.trello.boardContentHeight} - ${theme.spacing(5)})`
+          maxHeight: theme => `calc(${theme.trello.boardContentHeight} - ${theme.spacing(5)})`
         }}>
         {/* Column header */}
         <Box
           sx={{
-            height: (theme) => theme.trello.columnHeaderHeight,
+            height: theme => theme.trello.columnHeaderHeight,
             p: 2,
             display: 'flex',
             alignItems: 'center',
@@ -152,16 +160,82 @@ function Column({ column }) {
         {/* Column footer */}
         <Box
           sx={{
-            height: (theme) => theme.trello.columnFooterHeight,
-            p: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
+            height: theme => theme.trello.columnFooterHeight,
+            p: 2
           }}>
-          <Button startIcon={<AddCardIcon />}>Add new card</Button>
-          <Tooltip title='Drag to move'>
-            <DragHandleIcon sx={{ cursor: 'pointer' }} />
-          </Tooltip>
+          {!openNewCardForm ? (
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+              <Button onClick={toggleOpenNewCardForm} startIcon={<AddCardIcon />}>
+                Add new card
+              </Button>
+              <Tooltip title='Drag to move'>
+                <DragHandleIcon sx={{ cursor: 'pointer' }} />
+              </Tooltip>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }}>
+              <TextField
+                sx={{
+                  '& label': { color: 'text.primary' },
+                  '& label.Mui-focused': { color: theme => theme.palette.primary.main },
+                  '& input': {
+                    color: theme => theme.palette.primary.main,
+                    bgcolor: theme => (theme.palette.mode === 'dark' ? '#333643' : 'white')
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: theme => theme.palette.primary.main },
+                    '&:hover fieldset': { borderColor: theme => theme.palette.primary.main },
+                    '&.Mui-focused fieldset': { borderColor: theme => theme.palette.primary.main }
+                  },
+                  '& .MuiOutlinedInput-input': { borderRadius: 1 }
+                }}
+                label='Enter card title'
+                type='text'
+                size='small'
+                variant='outlined'
+                autofocus
+                value={newCardTitle}
+                onChange={e => {
+                  setNewCardTitle(e.target.value)
+                }}
+              />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Button
+                  onClick={addNewCard}
+                  variant='contained'
+                  color='success'
+                  size='small'
+                  sx={{
+                    boxShadow: 'none',
+                    border: '1px solid',
+                    borderColor: theme => theme.palette.success.main,
+                    '&:hover': { bgcolor: theme => theme.palette.success.main }
+                  }}>
+                  Add
+                </Button>
+                <CloseIcon
+                  onClick={toggleOpenNewCardForm}
+                  fontSize='small'
+                  sx={{
+                    color: theme => theme.palette.warning.light,
+                    cursor: 'pointer'
+                  }}
+                />
+              </Box>
+            </Box>
+          )}
         </Box>
       </Box>
     </div>

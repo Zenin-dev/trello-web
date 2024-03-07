@@ -27,25 +27,20 @@ function AppBar() {
     <Box
       sx={{
         width: '100%',
-        height: (theme) => theme.trello.appBarHeight,
+        height: theme => theme.trello.appBarHeight,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 2,
         paddingX: 2,
         overflowX: 'auto',
-        bgcolor: (theme) =>
-          theme.palette.mode === 'dark' ? '#2c3e50' : '#1565c0',
+        bgcolor: theme => (theme.palette.mode === 'dark' ? '#2c3e50' : '#1565c0'),
         '&::-webkit-scrollbar-track': { m: 2 }
       }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <AppsIcon sx={{ color: 'white' }}></AppsIcon>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <SvgIcon
-            component={trelloLogo}
-            inheritViewBox
-            sx={{ color: 'white' }}
-          />
+          <SvgIcon component={trelloLogo} inheritViewBox sx={{ color: 'white' }} />
           <Typography
             sx={{
               fontSize: '1.2rem',
@@ -60,10 +55,7 @@ function AppBar() {
           <Recent />
           <Starred />
           <Templates />
-          <Button
-            sx={{ color: 'white' }}
-            variant='outlined'
-            startIcon={<LibraryAddIcon />}>
+          <Button sx={{ color: 'white' }} variant='outlined' startIcon={<LibraryAddIcon />}>
             Create
           </Button>
         </Box>
@@ -88,7 +80,7 @@ function AppBar() {
           type='text'
           size='small'
           value={searchValue}
-          onChange={(e) => {
+          onChange={e => {
             setSearchValue(e.target.value)
           }}
           InputProps={{
@@ -98,24 +90,23 @@ function AppBar() {
               </InputAdornment>
             ),
             endAdornment: (
-              <CloseIcon
-                fontSize='small'
-                sx={{
-                  color: searchValue ? 'white' : 'transparent',
-                  cursor: 'pointer'
-                }}
-                onClick={() => setSearchValue('')}
-              />
+              <InputAdornment position='end'>
+                <CloseIcon
+                  fontSize='small'
+                  sx={{
+                    color: searchValue ? 'white' : 'transparent',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setSearchValue('')}
+                />
+              </InputAdornment>
             )
           }}
         />
         <ModeSelect />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Tooltip title='Notification'>
-            <Badge
-              color='warning'
-              variant='dot'
-              size='small'>
+            <Badge color='warning' variant='dot' size='small'>
               <NotificationsIcon sx={{ color: 'white', cursor: 'pointer' }} />
             </Badge>
           </Tooltip>
