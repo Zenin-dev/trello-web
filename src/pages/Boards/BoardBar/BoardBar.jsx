@@ -27,52 +27,29 @@ const MENU_STYLE = {
 }
 
 function BoardBar({ board }) {
+  console.log('board in BoardBar: ', board)
   return (
     <Box
       sx={{
         width: '100%',
-        height: (theme) => theme.trello.boardBarHeight,
+        height: theme => theme.trello.boardBarHeight,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 2,
         paddingX: 2,
         overflowX: 'auto',
-        bgcolor: (theme) =>
-          theme.palette.mode === 'dark' ? '#34495e' : '#1976d2',
+        bgcolor: theme => (theme.palette.mode === 'dark' ? '#34495e' : '#1976d2'),
         '&::-webkit-scrollbar-track': { m: 2 }
       }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Chip
-          sx={MENU_STYLE}
-          icon={<DashboardIcon />}
-          label={board?.title}
-          clickable
-        />
-        <Chip
-          sx={MENU_STYLE}
-          icon={<VpnLockIcon />}
-          label={capitalizeFirstLetter(board?.type)}
-          clickable
-        />
-        <Chip
-          sx={MENU_STYLE}
-          icon={<AddToDriveIcon />}
-          label='Add To Google Drive'
-          clickable
-        />
-        <Chip
-          sx={MENU_STYLE}
-          icon={<BoltIcon />}
-          label='Automation'
-          clickable
-        />
-        <Chip
-          sx={MENU_STYLE}
-          icon={<FilterListIcon />}
-          label='Filters'
-          clickable
-        />
+        <Tooltip title={board?.description}>
+          <Chip sx={MENU_STYLE} icon={<DashboardIcon />} label={board?.title} clickable />
+        </Tooltip>
+        <Chip sx={MENU_STYLE} icon={<VpnLockIcon />} label={capitalizeFirstLetter(board?.type)} clickable />
+        <Chip sx={MENU_STYLE} icon={<AddToDriveIcon />} label='Add To Google Drive' clickable />
+        <Chip sx={MENU_STYLE} icon={<BoltIcon />} label='Automation' clickable />
+        <Chip sx={MENU_STYLE} icon={<FilterListIcon />} label='Filters' clickable />
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Button
