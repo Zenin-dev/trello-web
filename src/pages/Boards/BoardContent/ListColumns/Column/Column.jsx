@@ -25,19 +25,26 @@ import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import theme from '~/theme'
 
-function Column({ column }) {
+function Column({ column, createNewCard }) {
   const [openNewCardForm, setOpenNewCardForm] = useState(false)
   const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
 
   const [newCardTitle, setNewCardTitle] = useState('')
-  const addNewCard = () => {
+  const addNewCard = async () => {
     if (!newCardTitle) {
       // console.error('Please enter Card Title!')
       return
     }
     // console.log(newCardTitle)
-    // Call API
+    // Create Card Data to call API
+    const newCardData = {
+      title: newCardTitle,
+      columnId: column._id
+    }
 
+    await createNewCard(newCardData)
+
+    // Close form input
     toggleOpenNewCardForm()
     setNewCardTitle('')
   }
@@ -205,7 +212,7 @@ function Column({ column }) {
                 type='text'
                 size='small'
                 variant='outlined'
-                autofocus
+                autoFocus
                 value={newCardTitle}
                 onChange={e => {
                   setNewCardTitle(e.target.value)

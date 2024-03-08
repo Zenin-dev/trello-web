@@ -7,19 +7,26 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import Box from '@mui/material/Box'
 import Column from './Column/Column'
 
-function ListColumns({ columns }) {
+function ListColumns({ columns, createNewColumn, createNewCard }) {
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
   const toggleOpenNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
 
   const [newColumnTitle, setNewColumnTitle] = useState('')
-  const addNewColumn = () => {
+  const addNewColumn = async () => {
     if (!newColumnTitle) {
       // console.error('Please enter Column Title!')
       return
     }
     // console.log(newColumnTitle)
-    // Call API
 
+    // Create column data to call API
+    const newColumnData = {
+      title: newColumnTitle
+    }
+    // Call API
+    await createNewColumn(newColumnData)
+
+    // Close form input
     toggleOpenNewColumnForm()
     setNewColumnTitle('')
   }
@@ -30,7 +37,7 @@ function ListColumns({ columns }) {
         sx={{
           bgcolor: 'inherit',
           width: '100%',
-          heigth: '100%',
+          height: '100%',
           display: 'flex',
           overflowX: 'auto',
           overflowY: 'hidden',
@@ -38,7 +45,7 @@ function ListColumns({ columns }) {
           '&::-webkit-scrollbar-track': { m: 2 }
         }}>
         {columns?.map(column => (
-          <Column key={column._id} column={column} />
+          <Column key={column._id} column={column} createNewCard={createNewCard} />
         ))}
 
         {/* Add new column */}
@@ -96,7 +103,7 @@ function ListColumns({ columns }) {
               type='text'
               size='small'
               variant='outlined'
-              autofocus
+              autoFocus
               value={newColumnTitle}
               onChange={e => {
                 setNewColumnTitle(e.target.value)

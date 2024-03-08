@@ -27,7 +27,6 @@ const MENU_STYLE = {
 }
 
 function BoardBar({ board }) {
-  console.log('board in BoardBar: ', board)
   return (
     <Box
       sx={{
