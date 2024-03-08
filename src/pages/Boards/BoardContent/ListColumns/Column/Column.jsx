@@ -3,7 +3,6 @@ import TextField from '@mui/material/TextField'
 import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { mapOrder } from '~/utils/sorts'
 import ListCards from './ListCards/ListCards'
 import Box from '@mui/material/Box'
 import React from 'react'
@@ -23,7 +22,6 @@ import ContentPaste from '@mui/icons-material/ContentPaste'
 import Cloud from '@mui/icons-material/Cloud'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
-import theme from '~/theme'
 
 function Column({ column, createNewCard }) {
   const [openNewCardForm, setOpenNewCardForm] = useState(false)
@@ -71,7 +69,7 @@ function Column({ column, createNewCard }) {
   const handleClose = () => {
     setAnchorEl(null)
   }
-  const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id')
+  const orderedCards = column.cards
   return (
     <div ref={setNodeRef} style={dndKitColumnStyles} {...attributes}>
       <Box

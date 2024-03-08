@@ -1,6 +1,14 @@
+import { Box, CircularProgress, Typography } from '@mui/material'
+import { mapOrder } from '~/utils/sorts'
 import { isEmpty } from 'lodash'
 import { generatePlaceholderCard } from '~/utils/formaters'
-import { fetchBoardDetailsAPI, createNewColumnAPI, createNewCardAPI, updateBoardDetailsAPI } from '~/apis'
+import {
+  fetchBoardDetailsAPI,
+  createNewColumnAPI,
+  createNewCardAPI,
+  updateBoardDetailsAPI,
+  updateColumnDetailsAPI
+} from '~/apis'
 import { useState, useEffect } from 'react'
 import Container from '@mui/material/Container'
 import AppBar from '~/components/AppBar/AppBar'
@@ -16,11 +24,14 @@ function Board() {
 
     // Call API
     fetchBoardDetailsAPI(boardId).then(board => {
+      board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
       // Handle drag to empty column
       board.columns.forEach(column => {
         if (isEmpty(column.cards)) {
           column.cards = [generatePlaceholderCard(column)]
           column.cardOrderIds = [generatePlaceholderCard(column)._id]
+        } else {
+          column.cards = mapOrder(column.cards, column.cardOrderIds, '_id')
         }
       })
 
@@ -55,14 +66,43 @@ function Board() {
   }
 
   // Func call API after dnd
-  const moveColumns = async dndOrderedColumns => {
+  const moveColumns = dndOrderedColumns => {
     const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id)
     const newBoard = { ...board }
     newBoard.columns = dndOrderedColumns
     newBoard.columnOrderIds = dndOrderedColumnsIds
     setBoard(newBoard)
     // Call API update Board
-    await updateBoardDetailsAPI(newBoard._id, { columnOrderIds: dndOrderedColumnsIds })
+    updateBoardDetailsAPI(newBoard._id, { columnOrderIds: dndOrderedColumnsIds })
+  }
+
+  const moveCardInTheSameColumn = (columnId, dndOrderedCards, dndOderedCardIds) => {
+    const newBoard = { ...board }
+    const columnOfDraggingCard = newBoard.columns.find(column => column._id === columnId)
+    if (columnOfDraggingCard) {
+      columnOfDraggingCard.cards = dndOrderedCards
+      columnOfDraggingCard.cardOrderIds = dndOderedCardIds
+    }
+    setBoard(newBoard)
+    updateColumnDetailsAPI(columnId, { cardOrderIds: dndOderedCardIds })
+  }
+
+  if (!board) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2,
+          width: '100vw',
+          height: '100vh'
+        }}>
+        <CircularProgress />
+        <Typography>Loading...</Typography>
+      </Box>
+    )
   }
 
   return (
@@ -75,6 +115,7 @@ function Board() {
           createNewColumn={createNewColumn}
           createNewCard={createNewCard}
           moveColumns={moveColumns}
+          moveCardInTheSameColumn={moveCardInTheSameColumn}
         />
       </Container>
     </>
