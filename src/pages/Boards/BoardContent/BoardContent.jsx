@@ -27,7 +27,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 
-function BoardContent({ board, createNewColumn, createNewCard }) {
+function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
   // const pointerSensor = useSensor(PointerSensor, {
   //   activationConstraint: { distance: 10 }
   // })
@@ -217,10 +217,9 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
     // Drag end Column
     if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
       if (active.id !== over.id) {
-        console.log('active: ', active)
-        console.log('over: ', over)
+        // console.log('active: ', active)
+        // console.log('over: ', over)
         const oldColumnIndex = orderedColumns.findIndex(c => c._id === active.id)
-        console.log('oldColumnIndex: ', oldColumnIndex)
         let newColumnIndex
         if (over.data.current?.columnId) {
           newColumnIndex = orderedColumns.findIndex(c => c._id === over.data.current.columnId)
@@ -228,13 +227,13 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
           newColumnIndex = orderedColumns.findIndex(c => c._id === over.id)
         }
 
-        console.log(typeof over.data.current)
-        console.log('newColumnIndex: ', newColumnIndex)
+        // console.log(typeof over.data.current)
+        // console.log('newColumnIndex: ', newColumnIndex)
         const dndOrderedColumns = arrayMove(orderedColumns, oldColumnIndex, newColumnIndex)
-        console.log('dndOrderedColumns: ', dndOrderedColumns)
 
-        // Sau xu ly Api
-        // const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id)
+        // Call API
+        moveColumns(dndOrderedColumns)
+        //
 
         setOrderedColumns(dndOrderedColumns)
       }
