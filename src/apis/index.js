@@ -1,7 +1,7 @@
 import { API_ROOT } from '~/utils/constants'
 import axios from 'axios'
 
-// Column
+// Board
 export const fetchBoardDetailsAPI = async boardId => {
   const response = await axios.get(`${API_ROOT}/v1/boards/${boardId}`)
 
@@ -13,6 +13,11 @@ export const updateBoardDetailsAPI = async (boardId, updateData) => {
   const response = await axios.put(`${API_ROOT}/v1/boards/${boardId}`, updateData)
 
   // axios se tra ve ket qua qua properties cua no la data
+  return response.data
+}
+
+export const moveCardToDifferentColumnAPI = async updateData => {
+  const response = await axios.put(`${API_ROOT}/v1/boards/supports/moving-card`, updateData)
   return response.data
 }
 
