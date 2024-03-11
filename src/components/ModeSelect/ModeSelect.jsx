@@ -3,22 +3,20 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
+// import DarkModeOutLinedIcon from '@mui/icons-material/DarkModeOutLined'
 import LightModeIcon from '@mui/icons-material/LightMode'
-import DarkModeOutLinedIcon from '@mui/icons-material/DarkModeOutLined'
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness'
 import Box from '@mui/material/Box'
 
 function ModeSelect() {
   const { mode, setMode } = useColorScheme()
-  const handleChange = (event) => {
+  const handleChange = event => {
     const seclectedMode = event.target.value
     setMode(seclectedMode)
   }
 
   return (
-    <FormControl
-      sx={{ minWidth: '120px' }}
-      size='small'>
+    <FormControl sx={{ minWidth: '120px' }} size='small'>
       <InputLabel
         sx={{
           color: 'white',
