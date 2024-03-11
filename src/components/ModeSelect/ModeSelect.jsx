@@ -3,7 +3,7 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
-// import DarkModeOutLinedIcon from '@mui/icons-material/DarkModeOutLined'
+import DarkModeOutLinedIcon from '@mui/icons-material/DarkModeOutLined'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness'
 import Box from '@mui/material/Box'
@@ -48,7 +48,7 @@ function ModeSelect() {
         </MenuItem>
         <MenuItem value={'dark'}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {/* <DarkModeOutLinedIcon fontSize='small' />git  */}
+            <DarkModeOutLinedIcon fontSize='small' />
             Dark
           </Box>
         </MenuItem>
