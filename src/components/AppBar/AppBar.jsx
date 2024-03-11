@@ -38,7 +38,7 @@ function AppBar() {
         '&::-webkit-scrollbar-track': { m: 2 }
       }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <AppsIcon sx={{ color: 'white' }}></AppsIcon>
+        {/* <AppsIcon sx={{ color: 'white' }}></AppsIcon> */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <SvgIcon component={trelloLogo} inheritViewBox sx={{ color: 'white' }} />
           <Typography
@@ -47,10 +47,11 @@ function AppBar() {
               fontWeight: 'bold',
               color: 'white'
             }}>
-            Trello
+            Kanban Board
           </Typography>
         </Box>
-        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
+        {/* Menu */}
+        {/* <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
           <Workspaces />
           <Recent />
           <Starred />
@@ -58,11 +59,12 @@ function AppBar() {
           <Button sx={{ color: 'white' }} variant='outlined' startIcon={<LibraryAddIcon />}>
             Create
           </Button>
-        </Box>
+        </Box> */}
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <TextField
+        {/* Search */}
+        {/* <TextField
           sx={{
             minWidth: '120px',
             maxWidth: '180px',
@@ -102,18 +104,22 @@ function AppBar() {
               </InputAdornment>
             )
           }}
-        />
+        /> */}
+        {/* Mode */}
         <ModeSelect />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Tooltip title='Notification'>
+          {/* Noti */}
+          {/* <Tooltip title='Notification'>
             <Badge color='warning' variant='dot' size='small'>
               <NotificationsIcon sx={{ color: 'white', cursor: 'pointer' }} />
             </Badge>
-          </Tooltip>
-          <Tooltip title='Help'>
+          </Tooltip> */}
+          {/* Help */}
+          {/* <Tooltip title='Help'>
             <HelpOutlineIcon sx={{ color: 'white', cursor: 'pointer' }} />
-          </Tooltip>
-          <Profiles />
+          </Tooltip> */}
+          {/* Profiles */}
+          {/* <Profiles /> */}
         </Box>
       </Box>
     </Box>

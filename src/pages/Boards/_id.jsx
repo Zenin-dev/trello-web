@@ -152,7 +152,7 @@ function Board() {
     <>
       <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
         <AppBar />
-        <BoardBar board={board} />
+        {/* <BoardBar board={board} /> */}
         <BoardContent
           board={board}
           createNewColumn={createNewColumn}
