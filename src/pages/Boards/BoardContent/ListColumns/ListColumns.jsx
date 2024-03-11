@@ -7,7 +7,7 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import Box from '@mui/material/Box'
 import Column from './Column/Column'
 
-function ListColumns({ columns, createNewColumn, createNewCard }) {
+function ListColumns({ columns, createNewColumn, createNewCard, deleteColumnDetails }) {
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
   const toggleOpenNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
 
@@ -45,7 +45,12 @@ function ListColumns({ columns, createNewColumn, createNewCard }) {
           '&::-webkit-scrollbar-track': { m: 2 }
         }}>
         {columns?.map(column => (
-          <Column key={column._id} column={column} createNewCard={createNewCard} />
+          <Column
+            key={column._id}
+            column={column}
+            createNewCard={createNewCard}
+            deleteColumnDetails={deleteColumnDetails}
+          />
         ))}
 
         {/* Add new column */}
